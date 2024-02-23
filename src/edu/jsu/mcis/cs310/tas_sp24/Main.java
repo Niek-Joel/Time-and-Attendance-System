@@ -22,7 +22,11 @@ public class Main {
         // output should be "Test Badge: #C4F37EFF (Welch, Travis C)"
         
         System.err.println("Test Badge: " + b.toString());
-
+        
+        // For Punch and PunchDAO testing
+        PunchDAO punchDAO = daoFactory.getPunchDAO();
+        Punch p = punchDAO.find(147);
+        //System.out.println("Test Punch: " + p.toString());
     }
 
 }
