@@ -11,19 +11,22 @@ public class Punch {
     private int terminalid;
     private Badge badge;
     private LocalDateTime originaltimestamp;
-    private EventType punchtype;
     private LocalDateTime adjustedtimestamp; 
+    private EventType punchtype;
     private PunchAdjustmentType adjustmenttype;
     
     // Constructor for a new punch object that hasn't been added to the database
-    Punch (int terminalid, Badge badge, EventType punchtype) {
+    public Punch (int terminalid, Badge badge, EventType punchtype) {
         this.terminalid = terminalid;
         this.badge = badge;
         this.punchtype = punchtype;
+        
+        // Initializing time stamp to the current time
+        this.originaltimestamp = LocalDateTime.now();
     }
     
     // Constructor for existing punches
-    Punch (int id, int terminalid, Badge badge, LocalDateTime originaltimestamp, EventType punchtype) {
+    public Punch (int id, int terminalid, Badge badge, LocalDateTime originaltimestamp, EventType punchtype) {
         this.id = id;
         this.terminalid = terminalid;
         this.badge = badge;
@@ -31,20 +34,4 @@ public class Punch {
         this.punchtype = punchtype;
     }
     
-    
-    
-    // Needs getters
-    
-    // Needs tostring
-    @Override
-    public String toString() {
-
-        StringBuilder s = new StringBuilder();
-
-        s.append("id=" + id).append(' ').append("terminalid=" + terminalid).append(' ').append("badge=" + badge).append(' ');
-        s.append("originaltimestamp=" + originaltimestamp).append(' ').append("punchtype=" + punchtype).append(' ');
-        
-        return s.toString();
-
-    }
 }
