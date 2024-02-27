@@ -1,10 +1,12 @@
 package edu.jsu.mcis.cs310.tas_sp24;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  *
  * @author Joel Cain
+ * @author Corey Roberts
  */
 public class Punch {
     private int id;
@@ -33,5 +35,47 @@ public class Punch {
         this.originaltimestamp = originaltimestamp;
         this.punchtype = punchtype;
     }
+    
+    //Getters
+    public int getId(){
+        return id;
+    }
+    
+    public int getTerminalid(){
+        return terminalid;
+    }
+    
+    public Badge getBadge(){
+        return badge;
+    }
+    
+    public LocalDateTime getOriginalTimestamp(){
+        return originaltimestamp;
+    }
+    
+    public EventType getPunchType(){
+        return punchtype;
+    }
+    
+    public LocalDateTime getAdjustedtimestamp(){
+        return adjustedtimestamp;
+    }
+    
+    public PunchAdjustmentType getAdjustmentType(){
+        return adjustmenttype;
+    }
+    
+    
+    // PrintOriginal 
+    public String printOriginal(){
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE MM/dd/yyyy HH:mm:ss");
+    String formattedDate = this.originaltimestamp.format(formatter);
+    
+    //using toString method of punchType (EventType enum)
+    String punchTypeString = this.punchtype.toString();
+    
+    return String.format("#%s %s: %s", this.badge.getId(), punchTypeString, formattedDate);
+    }
+
     
 }
