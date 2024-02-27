@@ -69,7 +69,7 @@ public class Punch {
     // PrintOriginal 
     public String printOriginal(){
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE MM/dd/yyyy HH:mm:ss");
-    String formattedDate = this.originaltimestamp.format(formatter);
+    String formattedDate = this.originaltimestamp.format(formatter).toUpperCase();
     
     //using toString method of punchType (EventType enum)
     String punchTypeString = this.punchtype.toString();
