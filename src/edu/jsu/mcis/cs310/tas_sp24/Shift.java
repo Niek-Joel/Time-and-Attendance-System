@@ -2,6 +2,7 @@
 package edu.jsu.mcis.cs310.tas_sp24;
 
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 
 /**
@@ -10,36 +11,39 @@ import java.util.HashMap;
  */
 public class Shift {
     private final String description ;
-    private final  int shiftid;
+    private final  int id = 0;
     private final LocalTime shiftstart;
     private final LocalTime shiftstop;
     private final int roundinterval;
-    private final LocalTime graceperiod;
-    private final int dockpenally;
+    private final int graceperiod;
+    private final int dockpenalty;
     private final LocalTime lunchstart;
     private final LocalTime lunchstop;
     private final int lunchthreshold;
-    private final int lunchduration;
-    private final int  shiftduration;
+    private final long lunchduration;
+    private final long shiftduration;
 
     /*constructor 
     * parameter values can be stored in the map as strings and passed as a single argument to the Shift constructor;
     * the constructor can then retrieve these values from the map and convert them to their native types.
     */
      public Shift(HashMap<String,String> shiftmap){
-        this.shiftid = Integer.parseInt(shiftmap.get("shiftid"));
-        this.description = (String)shiftmap.get("description");
-        this.shiftstart = LocalTime.parse(shiftmap.get("shiftstart"));
-        this.shiftstop = LocalTime.parse(shiftmap.get("shiftstop"));
-        this.roundinterval = Integer.parseInt(shiftmap.get("roundinterval"));
-        this.graceperiod = LocalTime.parse(shiftmap.get("graceperiod"));
-        this.dockpenally = Integer.parseInt(shiftmap.get("dockpenally"));
-        this.lunchstart = LocalTime.parse(shiftmap.get("lunchstart"));
-        this.lunchstop = LocalTime.parse(shiftmap.get("lunchstop"));
-        this.lunchthreshold = Integer.parseInt(shiftmap.get("lunchthreshold"));
-        this.lunchduration = Integer.parseInt(shiftmap.get("lunchduration"));
-        this.shiftduration = Integer.parseInt(shiftmap.get("shiftduration"));
+        description = (String)shiftmap.get("Description");
         
+        shiftstart = LocalTime.parse(shiftmap.get("Shift Start"));
+        shiftstop = LocalTime.parse(shiftmap.get("Shift Stop"));
+        
+        roundinterval = Integer.parseInt(shiftmap.get("Round Interval"));
+        graceperiod = Integer.parseInt(shiftmap.get("Grace Period"));
+        dockpenalty = Integer.parseInt(shiftmap.get("Dock Penalty"));
+        lunchstart = LocalTime.parse(shiftmap.get("Lunch Start"));
+        lunchstop = LocalTime.parse(shiftmap.get("Lunch Stop"));
+        lunchthreshold = Integer.parseInt(shiftmap.get("Lunch Threshold"));
+        
+        
+        lunchduration = ChronoUnit.MINUTES.between(lunchstart,lunchstop);
+        shiftduration = ChronoUnit.MINUTES.between(shiftstart,shiftstop);
+    
      }
      
      
@@ -47,8 +51,8 @@ public class Shift {
      public String getDescription() {
         return description;
     }
-     public int getShiftid() {
-        return shiftid;
+     public int getID() {
+        return id;
     }
      public LocalTime getShiftstart(){
          return shiftstart;
@@ -59,11 +63,11 @@ public class Shift {
      public int getRoundinterval(){
         return roundinterval;
      }
-     public LocalTime getGraceperiod(){
+     public int getGraceperiod(){
         return graceperiod;
      }
-     public int getDockpenally(){
-        return dockpenally;
+     public int getDockpenalty(){
+        return dockpenalty;
      }
      public LocalTime getLunchstart(){
         return lunchstart;
@@ -74,11 +78,13 @@ public class Shift {
      public int getLunchthreshold(){
         return lunchthreshold;
      }
-     public Integer getLunchduration() {
-        return lunchduration;
+     public long getLunchduration() {
+    
+        return  lunchduration;
+        
     }
 
-      public Integer getShiftduration() {
+      public long getShiftduration() {
         return shiftduration;
     }
 
@@ -87,11 +93,10 @@ public class Shift {
     public String toString() {
 
       StringBuilder s = new StringBuilder();
-     s.append('"')
-     .append(description)
-     .append(':')
+     s.append(description)
+     .append(": ")
      .append(shiftstart)
-     .append("-")
+     .append(" - ")
      .append(shiftstop)
      .append(" (")
      .append(shiftduration)
@@ -104,10 +109,8 @@ public class Shift {
      .append(" minutes)");
     
     return s.toString();
-    
-        
-
-    
-    }   
-    
+    }
 }
+     
+    
+

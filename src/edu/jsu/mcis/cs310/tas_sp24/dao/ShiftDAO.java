@@ -1,11 +1,11 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package edu.jsu.mcis.cs310.tas_sp24.dao;
 import edu.jsu.mcis.cs310.tas_sp24.Badge;
 import edu.jsu.mcis.cs310.tas_sp24.Shift;
 import java.sql.*;
+import java.time.LocalTime;
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -14,8 +14,9 @@ import java.sql.*;
  */
 public class ShiftDAO {
     private static final String QUERY_FIND1 = "SELECT * FROM shift WHERE id = ?"; //find and return numeric ID
-    private static final String QUERY_FIND2 = "SELECT shiftid FROM employee WHERE badgeid = ?";
-    
+    private static final String QUERY_FIND2 = "SELECT * FROM shift WHERE id IN (SELECT shiftid FROM employee WHERE badgeid = ?)";
+
+
     private final DAOFactory daoFactory;
 
     ShiftDAO(DAOFactory daoFactory) {
@@ -23,7 +24,7 @@ public class ShiftDAO {
         this.daoFactory = daoFactory;
 
     }
-     public Shift find(String id) {
+     public Shift find(int id) {
 
         Shift shift = null;
 
@@ -37,7 +38,7 @@ public class ShiftDAO {
             if (conn.isValid(0)) {
 
                 ps = conn.prepareStatement(QUERY_FIND1);
-                ps.setString(1,id);
+                ps.setInt(1,id);
 
                 boolean hasresults = ps.execute();
 
@@ -46,17 +47,37 @@ public class ShiftDAO {
                     rs = ps.getResultSet();
 
                     while (rs.next()) {
-                     //   String shiftid = rs.getString("description");
 
-                   //     shift = new Shift(shiftid);
+
+                      Map<String, String> shiftmap = new HashMap<>();
+                  
+                      shiftmap.put("Description" ,rs.getString("description"));
+                      
+                      shiftmap.put("Shift Start",rs.getString("shiftstart"));
+                      
+                      shiftmap.put("Shift Stop",rs.getString("shiftstop") );
+              
+                      shiftmap.put("Round Interval",rs.getString("roundinterval"));
+
+                      shiftmap.put("Grace Period",rs.getString("graceperiod")); 
+
+                      shiftmap.put("Dock Penalty",rs.getString("dockpenalty"));
+                      
+                      shiftmap.put("Lunch Start",rs.getString("lunchstart"));
+                        
+                      shiftmap.put("Lunch Stop",rs.getString("lunchstop"));
+                      
+                      shiftmap.put("Lunch Threshold",rs.getString("lunchthreshold"));
+                      
+                      shift = new Shift((HashMap<String, String>) shiftmap);
 
                     }
 
                 }
 
-            }
+            }                  
 
-        } catch (SQLException e) {
+        }catch (SQLException e) {
 
             throw new DAOException(e.getMessage());
 
@@ -81,11 +102,12 @@ public class ShiftDAO {
 
         return shift;
 
-    }
-     
-     
-     
-     public Badge find(Badge badge) {    //badge object as an argument
+}
+
+
+
+
+     public Shift find(Badge badge) {  
 
         Shift shift = null;
 
@@ -109,10 +131,30 @@ public class ShiftDAO {
 
                     while (rs.next()) {
 
-                     //  int shiftid=rs.getInt("shiftid");
-                      //  shift = new Shift(shiftid);
+                        
+                      Map<String, String> shiftmap = new HashMap<>();
+                  
+                      shiftmap.put("Description" ,rs.getString("description"));
+                      
+                      shiftmap.put("Shift Start",rs.getString("shiftstart"));
+                      
+                      shiftmap.put("Shift Stop",rs.getString("shiftstop") );
+              
+                      shiftmap.put("Round Interval",rs.getString("roundinterval"));
 
-                    }
+                      shiftmap.put("Grace Period",rs.getString("graceperiod")); 
+
+                      shiftmap.put("Dock Penalty",rs.getString("dockpenalty"));
+                      
+                      shiftmap.put("Lunch Start",rs.getString("lunchstart"));
+                        
+                      shiftmap.put("Lunch Stop",rs.getString("lunchstop"));
+                      
+                      shiftmap.put("Lunch Threshold",rs.getString("lunchthreshold"));
+                      
+                      shift = new Shift((HashMap<String, String>) shiftmap);
+
+                }
 
                 }
 
@@ -136,9 +178,20 @@ public class ShiftDAO {
                     ps.close();
                 } catch (SQLException e) {
                     throw new DAOException(e.getMessage());
-                }
-            }
+                    }
 
-        
 
-}
+            }   
+        }
+           return shift;
+
+ 
+     }
+
+
+
+       }
+ 
+
+
+ 
