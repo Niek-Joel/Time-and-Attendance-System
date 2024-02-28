@@ -23,10 +23,13 @@ public class Main {
         
         System.err.println("Test Badge: " + b.toString());
         
-        // For Punch and PunchDAO testing
+        // START: Punch/PunchDAO testing
         PunchDAO punchDAO = daoFactory.getPunchDAO();
         Punch p = punchDAO.find(147);
+        System.out.println(p.toString());
         //System.out.println("Test Punch: " + p.toString());
+        
+        // END: Punch/PunchDAO testing
     }
 
 }
