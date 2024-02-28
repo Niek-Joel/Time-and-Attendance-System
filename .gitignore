@@ -8,6 +8,7 @@
 /.idea/navEditor.xml
 /.idea/assetWizardSettings.xml
 .DS_Store
+<<<<<<< HEAD
 /build
 /dist
 /nbproject
@@ -17,3 +18,14 @@ manifest.mf
 .externalNativeBuild
 .cxx
 local.properties
+=======
+.externalNativeBuild
+.cxx
+local.properties
+/build/
+/captures/
+/dist/
+/nbproject/
+build.xml
+manifest.mf
+>>>>>>> origin/master
