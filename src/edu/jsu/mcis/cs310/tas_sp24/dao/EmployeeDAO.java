@@ -46,7 +46,7 @@ public class EmployeeDAO {
                     
                     while (rs.next()) {
                         
-                       int employeeid = id;
+                       int employeeid = rs.getInt("id");
                        String firstname = rs.getString("firstname");
                        String middlename = rs.getString("middlename");
                        String lastname = rs.getString("lastname");
@@ -98,11 +98,84 @@ public class EmployeeDAO {
         
         return employee;
     }
-                        
-}
-                
-            
+        public Employee find(Badge badge) {
         
-    
-    
+        Employee employee = null; 
+        
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        try {
+            
+            Connection conn = daoFactory.getConnection();
+            
+            if (conn.isValid(0)) {
+                ps = conn.prepareStatement(QUERY_FIND2);
+                ps.setString(1,badge.getId());
+                
+                boolean hasresults = ps.execute();
+                
+                if(hasresults) {
+                    rs = ps.getResultSet();
+                    
+                    while (rs.next()) {
+                    int id = rs.getInt("id");
+                    String firstname = rs.getString("firstname");
+                    String middlename = rs.getString("middlename");
+                    String lastname = rs.getString("lastname");
+                    LocalDateTime active = rs.getTimestamp("active").toLocalDateTime(); 
+                    BadgeDAO badgeDAO = daoFactory.getBadgeDAO();
+                    String badgeid = rs.getString("badgeid");
+                    Badge badge = badgeDAO.find(badgeid);
+                    DepartmentDAO departmentDAO = daoFactory.getDepartmentDAO();
+                    int departmentid = rs.getInt("departmentid");
+                    Department department = departmentDAO.find(departmentid);
+                    ShiftDAO shiftDAO = daoFactory.getShiftDAO();
+                    int shiftid = rs.getInt("shiftid");
+                    Shift shift = shiftDAO.find(shiftid);
+                    EmployeeType type = EmployeeType.values()[rs.getInt("employeetypeid")];
+                       
+
+
+                        
+                        
+                       employee = new Employee(id, firstname, middlename, lastname, active, badge, department, shift, type);
+                        
+                    }
+                }
+            }
+        } 
+        
+        catch (SQLException e) {
+
+            throw new DAOException(e.getMessage());
+
+        } 
+        
+        finally {
+
+            if (rs != null) {
+                try {
+                    rs.close();
+                } 
+                
+                catch (SQLException e) {
+                    throw  new DAOException(e.getMessage());
+                }
+            }
+            if (ps != null) {
+                try {
+                    ps.close();
+                } 
+                catch (SQLException e) {
+                    throw new DAOException(e.getMessage());
+                }
+            }
+        }
+        
+        return employee;
+    }
+}
+
+                        
 
