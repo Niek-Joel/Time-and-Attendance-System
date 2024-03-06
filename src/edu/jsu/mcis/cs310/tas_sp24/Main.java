@@ -31,6 +31,8 @@ public class Main {
         //System.out.println("Test Punch: " + p.toString());
         
         // END: Punch/PunchDAO testing
+        System.out.println("Merging test");
+        
     }
 
 }

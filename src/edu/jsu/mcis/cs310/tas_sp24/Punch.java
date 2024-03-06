@@ -1,12 +1,15 @@
 package edu.jsu.mcis.cs310.tas_sp24;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 
 /**
  *
  * @author Joel Cain
  * @author Corey Roberts
+ * @author(List)Spencer Carden
  */
 public class Punch {
     private int id;
@@ -35,6 +38,12 @@ public class Punch {
         this.originaltimestamp = originaltimestamp;
         this.punchtype = punchtype;
     }
+    public ArrayList list(Badge Badge,LocalDate LocalDate){
+        
+        return null;
+        
+    }
+    
     
     //Getters
     public int getId(){
@@ -63,6 +72,13 @@ public class Punch {
     
     public PunchAdjustmentType getAdjustmentType(){
         return adjustmenttype;
+    }
+    
+    
+    public void adjust(Shift s){
+        
+        
+        
     }
     
     
