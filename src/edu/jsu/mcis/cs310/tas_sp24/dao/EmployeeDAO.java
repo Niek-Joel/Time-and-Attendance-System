@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
  */
 public class EmployeeDAO {
     
-    private static final String QUERY_FIND1 = "SELECT FROM employee WHERE id = ?";
+    private static final String QUERY_FIND1 = "SELECT * FROM department JOIN employee ON employee.departmentid = department.id WHERE                                                employee.id = ?";
     private static final String QUERY_FIND2 = "SELECT * FROM employee WHERE badgeid = ?";
     
     private final DAOFactory daoFactory;
@@ -54,9 +54,16 @@ public class EmployeeDAO {
                        BadgeDAO badgeDAO = daoFactory.getBadgeDAO();
                        String badgeid = rs.getString("badgeid");
                        Badge badge = badgeDAO.find(badgeid);
-                       DepartmentDAO departmentDAO = daoFactory.getDepartmentDAO();
+
+
+                       
+                       
+                       String description = rs.getString("description");
+                       int terminalid = rs.getInt("id");
                        int departmentid = rs.getInt("departmentid");
-                       Department department = departmentDAO.find(departmentid);
+                       Department department = new Department(departmentid, terminalid, description);
+                       
+                       
                        ShiftDAO shiftDAO = daoFactory.getShiftDAO();
                        int shiftid = rs.getInt("shiftid");
                        Shift shift = shiftDAO.find(shiftid);

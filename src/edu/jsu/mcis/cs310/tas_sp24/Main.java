@@ -31,6 +31,9 @@ public class Main {
         //System.out.println("Test Punch: " + p.toString());
         
         // END: Punch/PunchDAO testing
+        EmployeeDAO employeeDAO = daoFactory.getEmployeeDAO();
+        Employee employee = employeeDAO.find(14);
+        System.out.println(employee.toString());
     }
 
 }
