@@ -49,11 +49,11 @@ public class Punch {
         return badge;
     }
     
-    public LocalDateTime getOriginalTimestamp(){
+    public LocalDateTime getOriginaltimestamp(){
         return originaltimestamp;
     }
     
-    public EventType getPunchType(){
+    public EventType getPunchtype(){
         return punchtype;
     }
     

@@ -1,10 +1,12 @@
 package edu.jsu.mcis.cs310.tas_sp24.dao;
 
 import edu.jsu.mcis.cs310.tas_sp24.Badge;
+import edu.jsu.mcis.cs310.tas_sp24.Department;
+import edu.jsu.mcis.cs310.tas_sp24.Employee;
 import edu.jsu.mcis.cs310.tas_sp24.EventType;
-import edu.jsu.mcis.cs310.tas_sp24.dao.BadgeDAO;
 import edu.jsu.mcis.cs310.tas_sp24.Punch;
 import java.sql.*;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 
 /**
@@ -13,6 +15,8 @@ import java.time.LocalDateTime;
  */
 public class PunchDAO {
     private static final String QUERY_FIND_EVENT = "SELECT * FROM event WHERE id = ?";
+    private static final String QUERY_INSERT_EVENT = "INSERT INTO event (id, terminalid, badgeid, timestamp, eventtypeid) VALUES "
+	    					   + "(?,?,?,?,?)";
 
     private final DAOFactory daoFactory;
 
@@ -93,4 +97,74 @@ public class PunchDAO {
         return punch;
     }
     
+    public int create(Punch punch) {
+		Integer punchid = 0;
+		//  Getting values to check authorization   
+		int punchTerminalid = punch.getTerminalid();  // Compare this to Department's terminalid for Authorization
+		Badge badge = punch.getBadge();
+        EmployeeDAO employeeDAO = daoFactory.getEmployeeDAO();
+		Employee employee = employeeDAO.find(badge);
+		Department department = employee.getDepartment();
+		int departmentTerminalid = department.getdepartmentId();
+	
+		//  If matching then Authorize
+		if (punchTerminalid == departmentTerminalid) {
+               
+            PreparedStatement ps = null;
+            ResultSet rs = null;
+
+            try {
+
+                Connection conn = daoFactory.getConnection();
+
+                if (conn.isValid(0)) {
+
+                    ps = conn.prepareStatement(QUERY_INSERT_EVENT, PreparedStatement.RETURN_GENERATED_KEYS);
+                    ps.setInt(1, punch.getId());
+                    ps.setInt(2, punch.getTerminalid());
+                    String badgeid = badge.getId();
+                    ps.setString(3, badgeid);
+                    ps.setString(4, (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).format(punch.getOriginaltimestamp()).toString());
+                    ps.setInt(5, punch.getPunchtype().ordinal());
+                    
+                    boolean hasresults = ps.execute();
+
+                    if (hasresults) {
+
+                        rs = ps.getGeneratedKeys();
+                        if (rs.next()) {
+                            punchid = rs.getInt(1);
+                        }
+                    }
+
+                }
+
+            } catch (SQLException e) {
+
+                throw new DAOException(e.getMessage());
+
+            } finally {
+
+                if (rs != null) {
+                    try {
+                        rs.close();
+                    } catch (SQLException e) {
+                        throw new DAOException(e.getMessage());
+                    }
+                }
+                if (ps != null) {
+                    try {
+                        ps.close();
+                    } catch (SQLException e) {
+                        throw new DAOException(e.getMessage());
+                    }
+                }
+
+            }
+		}
+	            
+	
+
+		return punchid;
+    }
 }
