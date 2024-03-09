@@ -8,15 +8,18 @@ import edu.jsu.mcis.cs310.tas_sp24.Punch;
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  *
  * @author Joel Cain
  */
-public class PunchDAO {
-    private static final String QUERY_FIND_EVENT = "SELECT * FROM event WHERE id = ?";
+public class PunchDAO { //"SELECT * FROM department JOIN employee ON employee.departmentid = department.id WHERE employee.id = ?";
+    private static final String QUERY_FIND_EVENT = "SELECT * FROM badge JOIN event "
+                                                 + "ON event.badgeid = badge.id "
+                                                 + "WHERE event.id = ?";
     private static final String QUERY_INSERT_EVENT = "INSERT INTO event (id, terminalid, badgeid, timestamp, eventtypeid) VALUES "
-	    					   + "(?,?,?,?,?)";
+	    					                       + "(?,?,?,?,?)";
 
     private final DAOFactory daoFactory;
 
@@ -27,39 +30,33 @@ public class PunchDAO {
     public Punch find(int id) {
         
         Punch punch = null;
-        
         PreparedStatement ps = null;
         ResultSet rs = null;
 
         try {
-
+            
             Connection conn = daoFactory.getConnection();
 
             if (conn.isValid(0)) {
-
+                
                 ps = conn.prepareStatement(QUERY_FIND_EVENT);
                 ps.setInt(1, id);
 
                 boolean hasresults = ps.execute();
 
                 if (hasresults) {
-
+                    
                     rs = ps.getResultSet();
-
                     while (rs.next()) {
                         // Getting parameters for Punch object contrsuctor (existing object)
                         int terminalid = rs.getInt("terminalid");
                         String badgeid = rs.getString("badgeid");
+                        String description = rs.getString("description");
+                        Badge badge = new Badge(badgeid, description);
                         
-                        // Create Badge object
-                        BadgeDAO badgeDAO = daoFactory.getBadgeDAO();
-                        Badge badge = badgeDAO.find(badgeid);
-                        
-                        // convert Timestamp object from sql to LocalDateTime object
                         Timestamp timestamp = rs.getTimestamp("timestamp");
                         LocalDateTime originaltimestamp = timestamp.toLocalDateTime();
                         
-                        // get punchtype (eventtype) from eventtypeid
                         int eventtypeid = rs.getInt("eventtypeid");
                         EventType punchtype = EventType.values()[eventtypeid];
 
@@ -98,39 +95,40 @@ public class PunchDAO {
     }
     
     public int create(Punch punch) {
-		Integer punchid = 0;
+		Integer punchid = null;
 		//  Getting values to check authorization   
 		int punchTerminalid = punch.getTerminalid();  // Compare this to Department's terminalid for Authorization
 		Badge badge = punch.getBadge();
         EmployeeDAO employeeDAO = daoFactory.getEmployeeDAO();
 		Employee employee = employeeDAO.find(badge);
 		Department department = employee.getDepartment();
-		int departmentTerminalid = department.getdepartmentId();
+        System.out.println("department = " + department);
+		int departmentTerminalid = department.getTerminalId();
+        //System.out.println("department = " + department.toString());
 	
+       
 		//  If matching then Authorize
 		if (punchTerminalid == departmentTerminalid) {
-               
             PreparedStatement ps = null;
             ResultSet rs = null;
-
+            
             try {
 
                 Connection conn = daoFactory.getConnection();
 
                 if (conn.isValid(0)) {
-
+                    
                     ps = conn.prepareStatement(QUERY_INSERT_EVENT, PreparedStatement.RETURN_GENERATED_KEYS);
                     ps.setInt(1, punch.getId());
                     ps.setInt(2, punch.getTerminalid());
                     String badgeid = badge.getId();
                     ps.setString(3, badgeid);
-                    ps.setString(4, (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).format(punch.getOriginaltimestamp()).toString());
+                    ps.setString(4, (punch.getOriginaltimestamp().format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss"))));
                     ps.setInt(5, punch.getPunchtype().ordinal());
                     
                     boolean hasresults = ps.execute();
 
                     if (hasresults) {
-
                         rs = ps.getGeneratedKeys();
                         if (rs.next()) {
                             punchid = rs.getInt(1);
@@ -162,6 +160,9 @@ public class PunchDAO {
 
             }
 		}
+        else { // failed authorization check
+            punchid = 0;
+        }
 	            
 	
 
