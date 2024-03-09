@@ -29,9 +29,9 @@ public class Main {
         Punch p = punchDAO.find(147);
         System.out.println(p.toString());
         //System.out.println("Test Punch: " + p.toString());
-        
-        // END: Punch/PunchDAO testing
-        System.out.println("Merging test");
+       
+        p.list(b,2018-09-21);
+       
         
     }
 

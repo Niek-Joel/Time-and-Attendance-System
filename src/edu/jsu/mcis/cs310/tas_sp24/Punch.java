@@ -21,7 +21,7 @@ public class Punch {
     private PunchAdjustmentType adjustmenttype;
     
     // Constructor for a new punch object that hasn't been added to the database
-    public Punch (int terminalid, Badge badge, EventType punchtype) {
+public Punch (int terminalid, Badge badge, EventType punchtype) {
         this.terminalid = terminalid;
         this.badge = badge;
         this.punchtype = punchtype;
