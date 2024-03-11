@@ -58,11 +58,11 @@ public Punch (int terminalid, Badge badge, EventType punchtype) {
         return badge;
     }
     
-    public LocalDateTime getOriginalTimestamp(){
+    public LocalDateTime getOriginaltimestamp(){
         return originaltimestamp;
     }
     
-    public EventType getPunchType(){
+    public EventType getPunchtype(){
         return punchtype;
     }
     

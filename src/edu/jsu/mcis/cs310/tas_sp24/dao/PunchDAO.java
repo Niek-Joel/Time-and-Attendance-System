@@ -1,8 +1,9 @@
 package edu.jsu.mcis.cs310.tas_sp24.dao;
 
 import edu.jsu.mcis.cs310.tas_sp24.Badge;
+import edu.jsu.mcis.cs310.tas_sp24.Department;
+import edu.jsu.mcis.cs310.tas_sp24.Employee;
 import edu.jsu.mcis.cs310.tas_sp24.EventType;
-import edu.jsu.mcis.cs310.tas_sp24.dao.BadgeDAO;
 import edu.jsu.mcis.cs310.tas_sp24.Punch;
 import java.sql.*;
 import java.time.LocalDate;
@@ -30,39 +31,33 @@ public class PunchDAO {
     public Punch find(int id) {
         
         Punch punch = null;
-        
         PreparedStatement ps = null;
         ResultSet rs = null;
 
         try {
-
+            
             Connection conn = daoFactory.getConnection();
 
             if (conn.isValid(0)) {
-
+                
                 ps = conn.prepareStatement(QUERY_FIND_EVENT);
                 ps.setInt(1, id);
 
                 boolean hasresults = ps.execute();
 
                 if (hasresults) {
-
+                    
                     rs = ps.getResultSet();
-
                     while (rs.next()) {
                         // Getting parameters for Punch object contrsuctor (existing object)
                         int terminalid = rs.getInt("terminalid");
                         String badgeid = rs.getString("badgeid");
+                        String description = rs.getString("description");
+                        Badge badge = new Badge(badgeid, description);
                         
-                        // Create Badge object
-                        BadgeDAO badgeDAO = daoFactory.getBadgeDAO();
-                        Badge badge = badgeDAO.find(badgeid);
-                        
-                        // convert Timestamp object from sql to LocalDateTime object
                         Timestamp timestamp = rs.getTimestamp("timestamp");
                         LocalDateTime originaltimestamp = timestamp.toLocalDateTime();
                         
-                        // get punchtype (eventtype) from eventtypeid
                         int eventtypeid = rs.getInt("eventtypeid");
                         EventType punchtype = EventType.values()[eventtypeid];
 

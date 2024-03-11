@@ -2,6 +2,7 @@
 package edu.jsu.mcis.cs310.tas_sp24;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 
 /**
@@ -87,9 +88,9 @@ public class Employee {
        .append("), Type: ")
        .append(employeetype)
        .append(", Department: ")
-       .append(department)
+       .append(department.getDescription())
        .append(", Active: ")
-       .append(active);
+       .append(active.format(DateTimeFormatter.ofPattern("MM/dd/yyyy")));
 
         return s.toString();
     }

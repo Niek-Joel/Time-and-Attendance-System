@@ -24,15 +24,15 @@ public class Main {
         
         System.err.println("Test Badge: " + b.toString());
         
-        // START: Punch/PunchDAO testing
+        // START: Punch/PunchDAO Create testing
         PunchDAO punchDAO = daoFactory.getPunchDAO();
-        Punch p = punchDAO.find(147);
-        System.out.println(p.toString());
-        //System.out.println("Test Punch: " + p.toString());
-       
         
-       
+        Punch p = new Punch(9999, b, EventType.CLOCK_OUT);
         
+        int punchid = punchDAO.create(p);
+        System.out.println("");
+        System.out.println("Create returns punchid which is " + punchid + ". (0 means its incorrect)");
+        // END: Punch/PunchDAO create testing
     }
 
 }

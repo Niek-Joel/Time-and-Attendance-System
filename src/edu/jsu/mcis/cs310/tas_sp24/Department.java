@@ -14,15 +14,15 @@ public class Department {
         this.description = description;
     }
     
-    public int getdepartmentId() {
+    public int getDepartmentId() {
         return departmentid;
     }
     
-    public int terminalId() {
+    public int getTerminalId() {
         return terminalid;
     }
     
-    public String Description() {
+    public String getDescription() {
         return description;
     }
 
