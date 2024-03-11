@@ -17,7 +17,7 @@ import java.util.ArrayList;
  */
 public class PunchDAO {
     private static final String QUERY_FIND_EVENT = "SELECT * FROM event WHERE id = ?";
-    private static final String QUERY_FIND_PUNCHLIST= "SELECT *, DATE(`timestamp`) AS originaldate FROM event WHERE badgeid = '?' HAVING originaldate > '?' ORDER BY `timestamp` LIMIT 1";
+    private static final String QUERY_FIND_PUNCHLIST= "SELECT *, DATE(timestamp) AS originaldate FROM event WHERE badgeid = ? HAVING originaldate = ? ORDER BY `timestamp`";
 //SELECT *, DATE(`timestamp`) AS originaldate FROM event WHERE badgeid = '28DC3FB8' HAVING originaldate > '2018-08-01' ORDER BY `timestamp` LIMIT 1; 
 //EXAMPLE OF USING SQL SYNTAX (creating tmp table to compare & checking it against the original then getting the first timestamp of the next day)
                             
@@ -103,8 +103,8 @@ public class PunchDAO {
         
         PreparedStatement ps = null;
         ResultSet rs = null;
-        String date=null;
-        String firstPunchNextDay = null;
+        String ts=null;
+        String ts1=null;
         
         ArrayList<Punch> punchlist = new ArrayList();
       
@@ -115,14 +115,14 @@ public class PunchDAO {
 
             if (conn.isValid(0)) 
                 
-              date = Date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + "%";
+              ts =Date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + "%";
             
-//              firstPunchNextDay = Date.plusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + "%";
+             
                 
                 ps = conn.prepareStatement(QUERY_FIND_PUNCHLIST);
                 ps.setString(1,Badge.getId());
-                ps.setString(2, date);
-//                ps.setString(3, firstPunchNextDay);
+                ps.setString(2,ts);
+              
                 
                 
                 
@@ -133,10 +133,14 @@ public class PunchDAO {
                     rs = ps.getResultSet();
 
                     while (rs.next()) {
-                    
-                    int id=rs.getInt("id");
-                    Punch p =(find(id));
-                    punchlist.add(p);
+                        
+                        
+                        if((Date.getDayOfMonth() != rs.getTimestamp("timestamp").toLocalDateTime().getDayOfMonth()) && (rs.getInt("eventtypeid") != 0)){
+                            break;
+                        }
+                        int id=rs.getInt("id");
+                        Punch p =(find(id));
+                        punchlist.add(p);
                         
                 }
 

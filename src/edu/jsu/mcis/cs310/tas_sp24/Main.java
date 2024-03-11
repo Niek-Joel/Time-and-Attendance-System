@@ -30,7 +30,7 @@ public class Main {
         System.out.println(p.toString());
         //System.out.println("Test Punch: " + p.toString());
        
-        p.list(b,2018-09-21);
+        
        
         
     }
