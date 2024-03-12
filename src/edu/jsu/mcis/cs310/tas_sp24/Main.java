@@ -1,10 +1,6 @@
 package edu.jsu.mcis.cs310.tas_sp24;
 
 import edu.jsu.mcis.cs310.tas_sp24.dao.*;
-import java.time.*;
-import java.util.*;
-import java.time.temporal.ChronoUnit;
-import java.time.format.DateTimeFormatter;
 
 public class Main {
 
@@ -27,12 +23,13 @@ public class Main {
         // START: Punch/PunchDAO Create testing
         PunchDAO punchDAO = daoFactory.getPunchDAO();
         
-        Punch p = new Punch(9999, b, EventType.CLOCK_OUT);
-        
-        int punchid = punchDAO.create(p);
+        Badge z = badgeDAO.find("021890C0");
+        Punch p = new Punch(103, z, EventType.CLOCK_IN);
+
+        //int punchid = punchDAO.create(p);  // WARNING: If you run this, it will create an entry in your database
         System.out.println("");
-        System.out.println("Create returns punchid which is " + punchid + ". (0 means its incorrect)");
+        //System.out.println("Create returns punchid = " + punchid + ". (checking: if 0 then incorrect)");
         // END: Punch/PunchDAO create testing
     }
 
-}
+} 

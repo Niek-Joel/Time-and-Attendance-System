@@ -51,18 +51,14 @@ public class EmployeeDAO {
                        String middlename = rs.getString("middlename");
                        String lastname = rs.getString("lastname");
                        LocalDateTime active = rs.getTimestamp("active").toLocalDateTime(); 
+                       
                        BadgeDAO badgeDAO = daoFactory.getBadgeDAO();
                        String badgeid = rs.getString("badgeid");
                        Badge badge = badgeDAO.find(badgeid);
-
-
                        
-                       
-                       String description = rs.getString("description");
-                       int terminalid = rs.getInt("id");
+                       DepartmentDAO departmentDAO = daoFactory.getDepartmentDAO();
                        int departmentid = rs.getInt("departmentid");
-                       Department department = new Department(departmentid, terminalid, description);
-                       
+                       Department department = departmentDAO.find(id);                    
                        
                        ShiftDAO shiftDAO = daoFactory.getShiftDAO();
                        int shiftid = rs.getInt("shiftid");
@@ -105,13 +101,14 @@ public class EmployeeDAO {
         
         return employee;
     }
-        public Employee find(Badge badge) {
-        
+
+    public Employee find(Badge badge) {
+    
         Employee employee = null; 
-        
+    
         PreparedStatement ps = null;
         ResultSet rs = null;
-        
+    
         try {
 
             Connection conn = daoFactory.getConnection();
