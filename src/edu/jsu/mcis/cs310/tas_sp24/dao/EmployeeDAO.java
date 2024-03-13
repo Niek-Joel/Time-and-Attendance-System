@@ -58,7 +58,7 @@ public class EmployeeDAO {
                        
                        DepartmentDAO departmentDAO = daoFactory.getDepartmentDAO();
                        int departmentid = rs.getInt("departmentid");
-                       Department department = departmentDAO.find(id);                    
+                       Department department = departmentDAO.find(departmentid);                    
                        
                        ShiftDAO shiftDAO = daoFactory.getShiftDAO();
                        int shiftid = rs.getInt("shiftid");
