@@ -1,4 +1,3 @@
-
 package edu.jsu.mcis.cs310.tas_sp24;
 
 import java.time.LocalDateTime;
@@ -21,8 +20,8 @@ public class Employee {
     private EmployeeType employeetype;
     
  //Constructors
-   public Employee(int id,String firstname,String middlename,String lastname,LocalDateTime active,Badge badge,
-           Department department,Shift shift,EmployeeType employeetype){
+   public Employee(int id, String firstname, String middlename, String lastname, LocalDateTime active, Badge badge,
+           Department department, Shift shift, EmployeeType employeetype){
        
        this.id = id;
        this.firstname = firstname;
