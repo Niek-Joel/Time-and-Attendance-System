@@ -139,6 +139,7 @@ public class PunchDAO { //"SELECT * FROM department JOIN employee ON employee.de
 
             } catch (SQLException e) {
 
+                punchid = 0; // Return zero if an error occurred during the insertion process
                 throw new DAOException(e.getMessage());
 
             } finally {

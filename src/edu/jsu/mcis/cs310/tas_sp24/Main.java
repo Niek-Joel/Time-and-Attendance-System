@@ -28,7 +28,7 @@ public class Main {
 
         //int punchid = punchDAO.create(p);  // WARNING: If you run this, it will create an entry in your database
         System.out.println("");
-        //System.out.println("Create returns punchid = " + punchid + ". (checking: if 0 then incorrect)");
+        //System.out.println("Create returns punchid = " + punchid + ". (If 0 then failed)");
         // END: Punch/PunchDAO create testing
     }
 
