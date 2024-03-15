@@ -5,23 +5,24 @@ package edu.jsu.mcis.cs310.tas_sp24;
  * @author Raelee Shuler
  */
 public class Department {
+
     private int departmentid, terminalid;
     private String description;
-    
+
     public Department(int departmentid, int terminalid, String description) {
         this.departmentid = departmentid;
         this.terminalid = terminalid;
         this.description = description;
     }
-    
+
     public int getDepartmentId() {
         return departmentid;
     }
-    
+
     public int getTerminalId() {
         return terminalid;
     }
-    
+
     public String getDescription() {
         return description;
     }
@@ -37,7 +38,7 @@ public class Department {
     public void setDescription(String description) {
         this.description = description;
     }
-    
+
     @Override
     public String toString() {
 

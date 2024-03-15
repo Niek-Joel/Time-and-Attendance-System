@@ -14,5 +14,5 @@ public enum EmployeeType {
     public String toString() {
         return description;
     }
-    
+
 }

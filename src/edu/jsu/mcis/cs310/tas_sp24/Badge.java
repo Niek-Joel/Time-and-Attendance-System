@@ -16,7 +16,6 @@ public class Badge {
     public String getDescription() {
         return description;
     }
-    
 
     @Override
     public String toString() {
