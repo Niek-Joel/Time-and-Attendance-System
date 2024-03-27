@@ -3,7 +3,6 @@ package edu.jsu.mcis.cs310.tas_sp24;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.LocalTime;
-import java.time.temporal.ChronoUnit;
 
 /**
  *
@@ -75,8 +74,8 @@ public class Punch {
         //Determine punch clock in or clock out
         boolean isClockIn = this.punchtype == EventType.CLOCK_IN;
         boolean isClockOut = this.punchtype == EventType.CLOCK_OUT;
-        
-        System.out.println("Original punch time" + this.originaltimestamp);
+    
+        System.out.println("Original punch time " + this.originaltimestamp);
         System.out.println("Punchtype " + (isClockIn ? "Clock In" : "Clock Out"));
         
         //---Adjustment logic rules start---
@@ -91,9 +90,10 @@ public class Punch {
             }
         }
         
-        //Late clock in adjustment (Grace Period or Dock Penalty
+        // Late clock in adjustment for Grace Period or Dock Penalty. 
+        // Also adjusts early clock in for end of lunch break
         if (isClockIn && punchTime.isAfter(s.getShiftstart())){
-            if (punchTime.isBefore(s.getShiftstart().plusMinutes(s.getGraceperiod()))){
+            if (punchTime.isBefore(s.getShiftstart().plusMinutes(s.getGraceperiod()))){ 
                 //Within grace period 5mins late shift back to Shift Start
                 this.adjustedtimestamp = LocalDateTime.of(this.originaltimestamp.toLocalDate(), s.getShiftstart());
                 this.adjustmenttype = PunchAdjustmentType.SHIFT_START;
@@ -101,6 +101,11 @@ public class Punch {
                 //past grace period but before dock penalty
                 this.adjustedtimestamp = LocalDateTime.of(this.originaltimestamp.toLocalDate(), s.getShiftstart().plusMinutes(s.getDockpenalty()));
                 this.adjustmenttype = PunchAdjustmentType.SHIFT_DOCK;
+            }
+            // After dock period (only other "Clock In" event is for Lunch stop)
+            else if (punchTime.isAfter(s.getLunchstart())) {
+                this.adjustedtimestamp = LocalDateTime.of(this.originaltimestamp.toLocalDate(), s.getLunchstop());
+                this.adjustmenttype = PunchAdjustmentType.LUNCH_STOP;
             }
         }
         
@@ -129,7 +134,9 @@ public class Punch {
         
         
         
-        
+        System.out.println("Adjusted punch time " + this.adjustedtimestamp);
+        System.out.println("Adjustment type " + this.adjustmenttype);
+        System.out.println("");
     }
     
     
@@ -149,6 +156,29 @@ public class Punch {
                 .append(formattedDate);
     
         return sb.toString();
+    }
+
+    public String printAdjusted() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE MM/dd/yyyy HH:mm:ss");
+        String formattedDate = this.adjustedtimestamp.format(formatter).toUpperCase();
+        String punchTypeString = this.punchtype.toString();
+        
+        StringBuilder sb = new StringBuilder();
+        
+        sb.append("#")
+                .append(this.badge.getId())
+                .append(" ")
+                .append(punchTypeString)
+                .append(": ")
+                .append(formattedDate)
+                .append(" (").append(adjustmenttype).append(")");
+    
+        return sb.toString();
+    }
+
+    @Override
+    public String toString() {
+        return printOriginal();
     }
 
 }
