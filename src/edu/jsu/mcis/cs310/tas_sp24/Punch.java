@@ -1,5 +1,6 @@
 package edu.jsu.mcis.cs310.tas_sp24;
 
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.LocalTime;
@@ -74,13 +75,11 @@ public class Punch {
         //Determine punch clock in or clock out
         boolean isClockIn = this.punchtype == EventType.CLOCK_IN;
         boolean isClockOut = this.punchtype == EventType.CLOCK_OUT;
-    
-        System.out.println("Original punch time " + this.originaltimestamp);
-        System.out.println("Punchtype " + (isClockIn ? "Clock In" : "Clock Out"));
+
         
         //---Adjustment logic rules start---
-        // Identify early clock in
-        if (isClockIn && punchTime.isBefore(s.getShiftstart())){
+        // Early clock in for shift start
+        if (isClockIn && isIntervalBeforeShiftStart(s) ){
             //Adjustment type: Early clock in 
             // punchTime.plusMinutes(adds15min) Calculates new time if new time passes (isAfter) s.getShiftstart
             //time snaps back to Shift_Start
@@ -90,53 +89,191 @@ public class Punch {
             }
         }
         
-        // Late clock in adjustment for Grace Period or Dock Penalty. 
-        // Also adjusts early clock in for end of lunch break
-        if (isClockIn && punchTime.isAfter(s.getShiftstart())){
-            if (punchTime.isBefore(s.getShiftstart().plusMinutes(s.getGraceperiod()))){ 
+        // Late clock in adjustment for Grace Period and Dock Penalty
+        if (isClockIn && isWithinDockStart(s)){
+            // Late clock in for shift start, within grace period
+            if (isWithinGraceStart(s)){ 
                 //Within grace period 5mins late shift back to Shift Start
                 this.adjustedtimestamp = LocalDateTime.of(this.originaltimestamp.toLocalDate(), s.getShiftstart());
                 this.adjustmenttype = PunchAdjustmentType.SHIFT_START;
-            } else if (punchTime.isBefore(s.getShiftstart().plusMinutes(s.getDockpenalty()))){
+            } 
+            // Late clock in for shift start, within dock period
+            else {
                 //past grace period but before dock penalty
                 this.adjustedtimestamp = LocalDateTime.of(this.originaltimestamp.toLocalDate(), s.getShiftstart().plusMinutes(s.getDockpenalty()));
                 this.adjustmenttype = PunchAdjustmentType.SHIFT_DOCK;
             }
-            // After dock period (only other "Clock In" event is for Lunch stop)
-            else if (punchTime.isAfter(s.getLunchstart())) {
+        }
+        
+        if (isWithinLunch(s)) {
+            // Late Clock in for lunch
+            if (isClockIn) {
                 this.adjustedtimestamp = LocalDateTime.of(this.originaltimestamp.toLocalDate(), s.getLunchstop());
                 this.adjustmenttype = PunchAdjustmentType.LUNCH_STOP;
             }
+            if (isClockOut) {
+                this.adjustedtimestamp = LocalDateTime.of(this.originaltimestamp.toLocalDate(), s.getLunchstart());
+                this.adjustmenttype = PunchAdjustmentType.LUNCH_START;
+            }
         }
         
-        //Early clock out adjustment
-        if (isClockOut && punchTime.isBefore(s.getShiftstop())){
-            //Check if within grace period 5mins clockout early
-            if (punchTime.plusMinutes(s.getGraceperiod()).isAfter(s.getShiftstop())){
+        // Early clock out adjustment for grace period and dock penalty
+        if (isClockOut && isWithinDockStop(s)){
+            // Early clock out for shift stop, within grace period
+            if (isWithinGraceEnd(s)) {
                 //considered within grace period shift time back to Shiftstop
                 this.adjustedtimestamp = LocalDateTime.of(this.originaltimestamp.toLocalDate(), s.getShiftstop());
                 this.adjustmenttype = PunchAdjustmentType.SHIFT_STOP;
-            } else if (punchTime.plusMinutes(s.getDockpenalty()).isBefore(s.getShiftstop())){
+            } 
+            // Early clock out for shift stop, within dock period
+            else{
                 //adjust time stamp to dock penalty
                 this.adjustedtimestamp = LocalDateTime.of(this.originaltimestamp.toLocalDate(), s.getShiftstop().minusMinutes(s.getDockpenalty()));
                 this.adjustmenttype = PunchAdjustmentType.SHIFT_DOCK;
-            }
-            
+            }       
         }
         
-        //Lunch adjustments
+        // Late Clock out for shift stop
+        if (isClockOut && isIntervalAfterShiftStop(s)) {
+            // If within Interval for clock out after shift stop 
+            if (punchTime.minusMinutes(s.getRoundinterval()).isBefore(s.getShiftstop())) {
+                this.adjustedtimestamp = LocalDateTime.of(this.originaltimestamp.toLocalDate(), s.getShiftstop());
+                this.adjustmenttype = PunchAdjustmentType.SHIFT_STOP;
+            }
+        }
+
+        // Calculate hours and minutes on timestamp. Seconds and nano left as zero
+        int totalMinutes = punchTime.getMinute() + punchTime.getHour()*60;
+        boolean isOnIcrement = ((double)totalMinutes % s.getRoundinterval() == 0.0);
+        int seconds = punchTime.getSecond();
+        if (seconds > 30) {
+            totalMinutes++;
+        }   
+        double totalIncrements = (double)totalMinutes/s.getRoundinterval(); // Casting to double so the int/int equation doesn't truncate
+        totalIncrements = Math.round(totalIncrements);
+        totalMinutes = (int)totalIncrements*s.getRoundinterval(); // Casting back to int, double was rounded on above line
+           
+        // For 24 hour time format
+        int hour = totalMinutes/60; 
+        int minute = totalMinutes - hour*60;
+
+        // The second part of the conditional is needed because all prior adjusts move the timestamp to a perfect interval
+        if (isOnIcrement && this.adjustedtimestamp == null) {
+            this.adjustmenttype = PunchAdjustmentType.NONE;
+        }
         
+        // If timestamp not on any prior zones, then move timestamp to nearest round interval 
+        if (this.adjustedtimestamp == null) {
+            this.adjustedtimestamp = LocalDateTime.of(this.originaltimestamp.toLocalDate(), LocalTime.of(hour, minute, 0));
+            if (this.adjustmenttype == null) {
+                this.adjustmenttype = PunchAdjustmentType.INTERVAL_ROUND;    
+            }
+        }
         
-        //interval round
+        // If on weekend 
+        if (this.getOriginaltimestamp().getDayOfWeek() == DayOfWeek.SATURDAY || this.originaltimestamp.getDayOfWeek() == DayOfWeek.SUNDAY) {
+            this.adjustmenttype = PunchAdjustmentType.INTERVAL_ROUND;
+        }
         
+
+    }
+    
+    
+    // Helper funciton for Adjust. Checks if punchTime is within or on the edge of Interval before shift start
+    public boolean isIntervalBeforeShiftStart(Shift s) {
+        LocalTime punchTime = this.originaltimestamp.toLocalTime();
+        LocalTime intervalStart = s.getShiftstart().minusMinutes(s.getDockpenalty());
         
-        //none
+        if (( punchTime.isAfter(intervalStart) || punchTime.equals(intervalStart)) &&
+             (punchTime.isBefore(s.getShiftstart()) || punchTime.equals(s.getShiftstart()))){
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    
+    // Helper funciton for Adjust. Checks if punchTime is within or on the edge of dock period after shift start
+    public boolean isWithinDockStart(Shift s) {
+        LocalTime punchTime = this.originaltimestamp.toLocalTime();
+        LocalTime dockEnd = s.getShiftstart().plusMinutes(s.getDockpenalty());
         
+        if ( punchTime.isAfter(s.getShiftstart()) && 
+            (punchTime.isBefore(dockEnd) || punchTime.equals(dockEnd))){
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    
+    // Helper funciton for Adjust. Checks if punchTime is within or on the edge of lunch period
+    public boolean isWithinLunch(Shift s) {
+        LocalTime punchTime = this.originaltimestamp.toLocalTime();
         
+        if ((punchTime.isAfter(s.getLunchstart()) || punchTime.equals(s.getLunchstart()) )&& 
+            (punchTime.isBefore(s.getLunchstop()) || punchTime.equals(s.getLunchstop()))){
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    
+    // Helper funciton for Adjust. Checks if punchTime is within or on the edge of dock period before shift stop
+    public boolean isWithinDockStop(Shift s) {
+        LocalTime punchTime = this.originaltimestamp.toLocalTime();
+        LocalTime dockStart = s.getShiftstop().minusMinutes(s.getDockpenalty());
         
-        System.out.println("Adjusted punch time " + this.adjustedtimestamp);
-        System.out.println("Adjustment type " + this.adjustmenttype);
-        System.out.println("");
+        if (( punchTime.isAfter(dockStart) || punchTime.equals(dockStart)) &&
+             (punchTime.isBefore(s.getShiftstop()) || punchTime.equals(s.getShiftstop()))){
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    
+    // Helper funciton for Adjust. Checks if punchTime is within or on the edge of Interval after shift stop
+    public boolean isIntervalAfterShiftStop(Shift s) {
+        LocalTime punchTime = this.originaltimestamp.toLocalTime();
+        LocalTime intervalStop = s.getShiftstop().plusMinutes(s.getDockpenalty());
+        
+        if (( punchTime.isAfter(s.getShiftstop()) || punchTime.equals(s.getShiftstop())) &&
+             (punchTime.isBefore(intervalStop) || punchTime.equals(intervalStop))){
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    
+    // Helper funciton for Adjust. Checks if punchTime is within or on the edge of grace period after shift start
+    public boolean isWithinGraceStart(Shift s) {
+        LocalTime punchTime = this.originaltimestamp.toLocalTime();
+        LocalTime graceEnd = s.getShiftstart().plusMinutes(s.getGraceperiod());
+        
+        if (( punchTime.isBefore(graceEnd) || punchTime.equals(graceEnd)) &&
+             (punchTime.isAfter(s.getShiftstart()) || punchTime.equals(s.getShiftstart()))){
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    
+    // Helper funciton for Adjust. Checks if punchTime is within or on the edge of grace period before shift end
+    public boolean isWithinGraceEnd(Shift s) {
+        LocalTime punchTime = this.originaltimestamp.toLocalTime();
+        LocalTime graceStart = s.getShiftstop().minusMinutes(s.getGraceperiod());
+        
+        if (( punchTime.isAfter(graceStart) || punchTime.equals(graceStart)) &&
+             (punchTime.isBefore(s.getShiftstop()) || punchTime.equals(s.getShiftstop()))){
+            return true;
+        }
+        else {
+            return false;
+        }
     }
     
     

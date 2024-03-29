@@ -39,15 +39,19 @@ public class PunchAdjustTest {
 
         /* Compare Adjusted Timestamps to Expected Values */
         
+        // Early clock in for shift start
         assertEquals("#28DC3FB8 CLOCK IN: FRI 09/07/2018 06:50:35", p1.printOriginal());
         assertEquals("#28DC3FB8 CLOCK IN: FRI 09/07/2018 07:00:00 (Shift Start)", p1.printAdjusted());
 
+        // Early clock out for lunch
         assertEquals("#28DC3FB8 CLOCK OUT: FRI 09/07/2018 12:03:54", p2.printOriginal());
         assertEquals("#28DC3FB8 CLOCK OUT: FRI 09/07/2018 12:00:00 (Lunch Start)", p2.printAdjusted());
 
+        // Early clock in for lunch
         assertEquals("#28DC3FB8 CLOCK IN: FRI 09/07/2018 12:23:41", p3.printOriginal());
         assertEquals("#28DC3FB8 CLOCK IN: FRI 09/07/2018 12:30:00 (Lunch Stop)", p3.printAdjusted());
 
+        // Late clock out for shift stop
         assertEquals("#28DC3FB8 CLOCK OUT: FRI 09/07/2018 15:34:13", p4.printOriginal());
         assertEquals("#28DC3FB8 CLOCK OUT: FRI 09/07/2018 15:30:00 (Shift Stop)", p4.printAdjusted());
 
@@ -101,6 +105,7 @@ public class PunchAdjustTest {
 
         /* Compare Adjusted Timestamps to Expected Values */
         
+        // Early clock in for shift start
         assertEquals("#08D01475 CLOCK IN: TUE 09/18/2018 11:59:33", p1.printOriginal());
         assertEquals("#08D01475 CLOCK IN: TUE 09/18/2018 12:00:00 (Shift Start)", p1.printAdjusted());
 
