@@ -11,7 +11,7 @@ import java.util.HashMap;
 public class Shift {
 
     private final String description;
-    private final int id = 0;
+    private final int id;
     private final LocalTime shiftstart;
     private final LocalTime shiftstop;
     private final int roundinterval;
@@ -39,6 +39,7 @@ public class Shift {
         lunchstart = LocalTime.parse(shiftmap.get("Lunch Start"));
         lunchstop = LocalTime.parse(shiftmap.get("Lunch Stop"));
         lunchthreshold = Integer.parseInt(shiftmap.get("Lunch Threshold"));
+        id = Integer.parseInt(shiftmap.get("id"));
 
         lunchduration = ChronoUnit.MINUTES.between(lunchstart, lunchstop);
         shiftduration = ChronoUnit.MINUTES.between(shiftstart, shiftstop);

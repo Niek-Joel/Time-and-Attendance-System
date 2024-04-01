@@ -68,6 +68,8 @@ public class ShiftDAO {
                         shiftmap.put("Lunch Stop", rs.getString("lunchstop"));
 
                         shiftmap.put("Lunch Threshold", rs.getString("lunchthreshold"));
+                        
+                        shiftmap.put("id", rs.getString("id"));
 
                         shift = new Shift((HashMap<String, String>) shiftmap);
 
