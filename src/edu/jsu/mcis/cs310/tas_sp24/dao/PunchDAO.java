@@ -22,8 +22,8 @@ public class PunchDAO { //"SELECT * FROM department JOIN employee ON employee.de
                                                  + "WHERE event.id = ?";
     private static final String QUERY_INSERT_EVENT = "INSERT INTO event (badgeid, timestamp, terminalid, eventtypeid) VALUES "
                                                    + "(?,?,?,?)";
-    private static final String QUERY_FIND_PUNCHLIST = "SELECT *, DATE(timestamp) AS originaldate FROM event WHERE badgeid = ? HAVING                                                       originaldate = ? ORDER BY timestamp";
-
+    private static final String QUERY_FIND_PUNCHLIST = "SELECT *, DATE(timestamp) AS originaldate FROM event WHERE badgeid = ? HAVING                                                                                                                   originaldate = ? ORDER BY timestamp";
+    private static final String QUERY_FIND_NEXTDAY ="SELECT *, DATE(timestamp) AS originaldate FROM event WHERE badgeid = ? HAVING                                                                                                                   originaldate > ? ORDER BY timestamp LIMIT BY 1";
 
     private final DAOFactory daoFactory;
 
@@ -172,7 +172,7 @@ public class PunchDAO { //"SELECT * FROM department JOIN employee ON employee.de
         PreparedStatement ps = null;
         ResultSet rs = null;
         String ts=null;
-        String ts1=null;
+        String ts2=null;
 
         ArrayList<Punch> punchlist = new ArrayList();
 
@@ -183,16 +183,17 @@ public class PunchDAO { //"SELECT * FROM department JOIN employee ON employee.de
 
             if (conn.isValid(0)) 
 
-              ts =Date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + "%";
+            ts =Date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+             ts2=Date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")); 
 
-
-
+              
                 ps = conn.prepareStatement(QUERY_FIND_PUNCHLIST);
                 ps.setString(1,Badge.getId());
                 ps.setString(2,ts);
-
-
-
+               
+               
+                
+                
 
                 boolean hasresults = ps.execute();
 
@@ -240,5 +241,10 @@ public class PunchDAO { //"SELECT * FROM department JOIN employee ON employee.de
         return punchlist;
 
     }
-
+    
+    public ArrayList list(Badge Badge, LocalDate BeginDate,LocalDate endDate){
+    ArrayList<Punch> punchlist = new ArrayList();
+        
+    return punchlist;
+    }
 }
