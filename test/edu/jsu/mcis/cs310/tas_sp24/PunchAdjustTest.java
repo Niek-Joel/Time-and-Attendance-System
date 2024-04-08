@@ -143,6 +143,36 @@ public class PunchAdjustTest {
     }
 
     @Test
+    public void testAdjustPunchesShift3Weekday() {
+
+        /* Get Shift Ruleset and Punch Data */
+        
+        PunchDAO punchDAO = daoFactory.getPunchDAO();
+        ShiftDAO shiftDAO = daoFactory.getShiftDAO();
+
+        Shift s2 = shiftDAO.find(4);
+
+        Punch p1 = punchDAO.find(3412);
+        Punch p2 = punchDAO.find(229);
+
+        /* Adjust Punches According to Shift Rulesets */
+        
+        p1.adjust(s2);
+        p2.adjust(s2);
+
+        /* Compare Adjusted Timestamps to Expected Values */
+        
+        // Early shift stop
+        assertEquals("#CB99D1E8 CLOCK OUT: WED 09/05/2018 06:55:25", p1.printOriginal());
+        assertEquals("#CB99D1E8 CLOCK OUT: WED 09/05/2018 07:00:00 (Shift Stop)", p1.printAdjusted());
+
+        // Random time
+        assertEquals("#8C0644BA CLOCK OUT: WED 08/01/2018 15:33:49", p2.printOriginal());
+        assertEquals("#8C0644BA CLOCK OUT: WED 08/01/2018 15:30:00 (Interval Round)", p2.printAdjusted());
+
+    }
+    
+    @Test
     public void testAdjustPunchesShift1SpecialCases() {
 
         /* Get Shift Ruleset and Punch Data */
