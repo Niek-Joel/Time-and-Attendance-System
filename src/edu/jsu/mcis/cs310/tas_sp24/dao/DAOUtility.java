@@ -7,6 +7,7 @@ import com.github.cliftonlabs.json_simple.*;
 import edu.jsu.mcis.cs310.tas_sp24.Punch;
 import edu.jsu.mcis.cs310.tas_sp24.Shift;
 import edu.jsu.mcis.cs310.tas_sp24.EventType;
+import edu.jsu.mcis.cs310.tas_sp24.PunchAdjustmentType;
 import java.time.format.DateTimeFormatter;
 
 
@@ -59,13 +60,24 @@ public static String getPunchListAsJSON(ArrayList<Punch> punchList){
 public static int calculateTotalMinutes(ArrayList<Punch> dailypunchlist, Shift shift){
     int totalMinutes = 0;
     Punch previousPunch = null;
+    boolean hadLunch;
+    boolean lunchStarted = false;
+    boolean lunchEnded = false;
     
     //Iterate through punchlist
     for (Punch currentPunch : dailypunchlist){
+        // Checking to see if they had lunch
+        if (currentPunch.getAdjustmentType() == PunchAdjustmentType.LUNCH_START) {
+            lunchStarted = true;
+        }
+        else if (currentPunch.getAdjustmentType() == PunchAdjustmentType.LUNCH_STOP) {
+            lunchEnded = true;
+        }
+        
         //check for previous clock in clock out pair
         if (previousPunch != null && previousPunch.getPunchtype() == EventType.CLOCK_IN && currentPunch.getPunchtype() == EventType.CLOCK_OUT){
             //Determine start time using adjusted. If unavalible fallback to original
-            LocalDateTime start = (previousPunch.getAdjustedtimestamp() !=null) ? previousPunch.getAdjustedtimestamp() : previousPunch.getOriginaltimestamp();
+            LocalDateTime start = (previousPunch.getAdjustedtimestamp() != null) ? previousPunch.getAdjustedtimestamp() : previousPunch.getOriginaltimestamp();
             //Determine end time using adjusted. If unavalible fallback to original
             LocalDateTime end = (currentPunch.getAdjustedtimestamp() != null) ? currentPunch.getAdjustedtimestamp() : currentPunch.getOriginaltimestamp();
             
@@ -76,17 +88,29 @@ public static int calculateTotalMinutes(ArrayList<Punch> dailypunchlist, Shift s
             previousPunch = null;
             
         } else if (currentPunch.getPunchtype() ==  EventType.CLOCK_IN){
-            //it punch is CLOCK_IN set it to previous punch for pairing
+            //if punch is CLOCK_IN set it to previous punch for pairing
             previousPunch = currentPunch;
         }
     }
     
-    //deduct lunch
-    if (totalMinutes > shift.getLunchthreshold() && totalMinutes - shift.getLunchduration() > 0){
-        totalMinutes -= shift.getLunchduration();
-    }else if (totalMinutes < shift.getLunchthreshold() && totalMinutes + shift.getLunchduration() < 0){
-        totalMinutes += shift.getLunchduration();
+    
+    if (lunchStarted && lunchEnded) {
+        hadLunch = true;
     }
+    else {
+        hadLunch = false;
+    }
+    
+    /*  Deduct lunch only if an employee doesn't have lunch and if they have worked more than 
+    the minimum number of minuts(called lunchthreshold in the database)  */
+    if (hadLunch == false){
+        if (totalMinutes > shift.getLunchthreshold() && totalMinutes - shift.getLunchduration() > 0){
+            totalMinutes -= shift.getLunchduration();
+        }else if (totalMinutes < shift.getLunchthreshold() && totalMinutes + shift.getLunchduration() < 0){
+            totalMinutes += shift.getLunchduration();
+        }
+    }
+    
     
     return totalMinutes;
 }
