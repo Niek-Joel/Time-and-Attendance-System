@@ -144,7 +144,7 @@ public class Punch {
 
         // Calculate hours and minutes on timestamp. Seconds and nano left as zero
         int totalMinutes = punchTime.getMinute() + punchTime.getHour()*60;
-        boolean isOnIcrement = ((double)totalMinutes % s.getRoundinterval() == 0.0);
+        boolean isOnIcrement = ((double)totalMinutes % s.getRoundinterval() == 0.0);  // Disregard seconds as per instructions
         int seconds = punchTime.getSecond();
         if (seconds > 30) {
             totalMinutes++;
@@ -277,7 +277,7 @@ public class Punch {
     }
     
     
-    // PrintOriginal 
+    // Prints original timestamp 
     public String printOriginal(){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE MM/dd/yyyy HH:mm:ss");
         String formattedDate = this.originaltimestamp.format(formatter).toUpperCase();
@@ -295,6 +295,7 @@ public class Punch {
         return sb.toString();
     }
 
+    // Prints adjusted timestamp
     public String printAdjusted() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE MM/dd/yyyy HH:mm:ss");
         String formattedDate = this.adjustedtimestamp.format(formatter).toUpperCase();
