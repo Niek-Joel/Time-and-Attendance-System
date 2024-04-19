@@ -63,15 +63,21 @@ public static int calculateTotalMinutes(ArrayList<Punch> dailypunchlist, Shift s
     boolean hadLunch;
     boolean lunchStarted = false;
     boolean lunchEnded = false;
+
+    // Dummy values for lunch end and start. It's only possible for them to be used when they've already been overwritten.
+    LocalDateTime lunchStartTime = LocalDateTime.of(2000, 1, 01, 00, 00, 00);
+    LocalDateTime lunchEndTime = LocalDateTime.of(2000, 1, 02, 00, 00, 00);
     
     //Iterate through punchlist
     for (Punch currentPunch : dailypunchlist){
         // Checking to see if they had lunch
         if (currentPunch.getAdjustmentType() == PunchAdjustmentType.LUNCH_START) {
             lunchStarted = true;
+            lunchStartTime = currentPunch.getAdjustedtimestamp();
         }
         else if (currentPunch.getAdjustmentType() == PunchAdjustmentType.LUNCH_STOP) {
             lunchEnded = true;
+            lunchEndTime = currentPunch.getAdjustedtimestamp();
         }
         
         //check for previous clock in clock out pair
@@ -96,10 +102,22 @@ public static int calculateTotalMinutes(ArrayList<Punch> dailypunchlist, Shift s
     
     if (lunchStarted && lunchEnded) {
         hadLunch = true;
+        long lunchDuration = ChronoUnit.MINUTES.between(lunchStartTime, lunchEndTime);
+        if (lunchDuration == 0) { // NOTE: FURTHER EXPLAINED DIRECTLY BELOW
+            hadLunch = false;
+        }
     }
     else {
         hadLunch = false;
     }
+
+    /* 
+    NOTE:
+    Extra check to make sure a full lunch was taken. This is necessary to make sure someone didn't clock
+    out then immediately clock back in for lunch to get extra time. Since every timestamp gets adjusted
+    to a rounded interval, we can assume that two consecutive punches would land on the same time after
+    they had their timestamps adjusted.
+    */
     
     /*  Deduct lunch only if an employee doesn't have lunch and if they have worked more than 
     the minimum number of minuts(called lunchthreshold in the database)  */
