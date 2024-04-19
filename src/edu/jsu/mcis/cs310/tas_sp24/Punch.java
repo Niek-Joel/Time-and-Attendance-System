@@ -7,6 +7,28 @@ import java.time.LocalTime;
 
 /**
  *
+ * The {@code Punch} class represents a single punch event, containing information such as
+ * terminal ID, badge, original timestamp, adjusted timestamp, punch type, and adjustment type.
+ *
+ * <p>Objects of the {@code Punch} class can represent existing punches retrieved from the
+ * database or newly-created punches that have not yet been added to the database. For new
+ * punches, the original timestamp is initialized to the current time as reported by the
+ * system clock.</p>
+ * 
+ * <p>The {@code Punch} class provides methods to adjust the punch timestamp based on
+ * shift rules and calculate the adjusted timestamp and adjustment type accordingly.</p>
+ *
+ * <p>It also includes methods to print the punch information with the original or adjusted
+ * timestamp in a formatted string representation.</p>
+ * 
+ * <p>When using the {@code Punch} class, it is to utilize appropriate data types
+ * for each instance field,{@link LocalDateTime} for timestamps and {@link EventType}
+ * for punch types.</p>
+ * 
+ * <p>Instances of {@code Punch} should be created using one of the provided constructors,
+ * depending on whether the punch is new or existing.</p>
+ * 
+ * 
  * @author Joel Cain
  * @author Corey Roberts
  */
@@ -19,17 +41,35 @@ public class Punch {
     private EventType punchtype;
     private PunchAdjustmentType adjustmenttype;
     
-    // Constructor for a new punch object that hasn't been added to the database
+    // Constructor 
+     /**
+     * Constructs a new {@code Punch} object for a newly-created punch with the specified
+     * terminal ID, badge, and punch type. The original timestamp is initialized to the
+     * current time as reported by the system clock.
+     *
+     * @param terminalid the ID of the terminal where the punch occurred
+     * @param badge the badge associated with the punch
+     * @param punchtype the type of punch (e.g., CLOCK IN, CLOCK OUT, TIME OUT)
+     */
     public Punch (int terminalid, Badge badge, EventType punchtype) {
         this.terminalid = terminalid;
         this.badge = badge;
         this.punchtype = punchtype;
         
-        // Initializing time stamp to the current time
+     // Initializing time stamp to the current time
         this.originaltimestamp = LocalDateTime.now();
     }
     
     // Constructor for existing punches
+     /**
+     * Constructs a new {@code Punch} object for an existing punch retrieved from the database.
+     *
+     * @param id the unique ID of the punch
+     * @param terminalid the ID of the terminal where the punch occurred
+     * @param badge the badge associated with the punch
+     * @param originaltimestamp the original timestamp of the punch
+     * @param punchtype the type of punch (e.g., CLOCK IN, CLOCK OUT, TIME OUT)
+     */
     public Punch (int id, int terminalid, Badge badge, LocalDateTime originaltimestamp, EventType punchtype) {
         this.id = id;
         this.terminalid = terminalid;
@@ -296,6 +336,11 @@ public class Punch {
     }
 
     // Prints adjusted timestamp
+     /**
+     * Returns a formatted string representation of the punch with its adjusted timestamp.
+     *
+     * @return a string representation of the punch with its adjusted timestamp
+     */
     public String printAdjusted() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE MM/dd/yyyy HH:mm:ss");
         String formattedDate = this.adjustedtimestamp.format(formatter).toUpperCase();
@@ -313,7 +358,12 @@ public class Punch {
     
         return sb.toString();
     }
-
+    
+     /**
+     * Returns a string representation of the punch with its original timestamp.
+     *
+     * @return a string representation of the punch with its original timestamp
+     */
     @Override
     public String toString() {
         return printOriginal();

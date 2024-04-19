@@ -13,6 +13,14 @@ import java.util.ArrayList;
 
 /**
  *
+ * Provides data access functionality for managing punch events in the TAS system,
+ * including methods for finding, creating, and listing punch events.
+ *
+ * <p>The {@code PunchDAO} class interacts with the TAS database to retrieve, insert,
+ * and retrieve lists of punch events. It also includes authorization checks to ensure
+ * that punches are created by authorized users.</p>
+ * 
+ * 
  * @author Joel Cain
  */
 public class PunchDAO { //"SELECT * FROM department JOIN employee ON employee.departmentid = department.id WHERE employee.id = ?";
@@ -26,11 +34,23 @@ public class PunchDAO { //"SELECT * FROM department JOIN employee ON employee.de
     private static final String QUERY_FIND_NEXTDAY ="SELECT *, DATE(timestamp) AS originaldate FROM event WHERE badgeid = ? HAVING                                                                                                                   originaldate > ? ORDER BY timestamp LIMIT BY 1";
 
     private final DAOFactory daoFactory;
-
+    
+     /**
+     * Constructs a new {@code PunchDAO} with the specified DAO factory.
+     *
+     * @param daoFactory the DAO factory to be used for obtaining connections
+     */
     public PunchDAO(DAOFactory daoFactory) {
         this.daoFactory = daoFactory;
     }
-
+    
+     /**
+     * Finds and returns a punch event with the specified ID.
+     *
+     * @param id the ID of the punch event to be found
+     * @return the punch event with the specified ID, or {@code null} if not found
+     * @throws DAOException if an error occurs during the database operation
+     */
     public Punch find(int id) {
 
         Punch punch = null;
@@ -97,7 +117,14 @@ public class PunchDAO { //"SELECT * FROM department JOIN employee ON employee.de
 
         return punch;
     }
-
+    
+     /**
+     * Creates a new punch event in the database.
+     *
+     * @param punch the punch event to be created
+     * @return the ID of the created punch event, or {@code 0} if not created
+     * @throws DAOException if an error occurs during the database operation
+     */
     public int create(Punch punch) {
         Integer punchid = null;
         //  Getting values to check authorization   
@@ -167,6 +194,15 @@ public class PunchDAO { //"SELECT * FROM department JOIN employee ON employee.de
         return punchid;
     }
     
+    /**
+     *
+     *
+     * @param Badge the badge associated with the punch events
+     * @param Date the date for which to retrieve punch events
+     * @return an {@code ArrayList} of punch events for the specified badge and date
+     * @throws DAOException if an error occurs during the database operation
+     */
+     
     public ArrayList list(Badge Badge,LocalDate Date){
 
         PreparedStatement ps = null;
@@ -242,6 +278,14 @@ public class PunchDAO { //"SELECT * FROM department JOIN employee ON employee.de
 
     }
     
+    /**
+     * 
+     * @param Badge the badge associated with the punch events
+     * @param BeginDate the beginning date of the date range
+     * @param endDate the end date of the date range
+     * @return an {@code ArrayList} of punch events for the specified badge and date range
+     * 
+     */
     public ArrayList list(Badge Badge, LocalDate BeginDate,LocalDate endDate){
     ArrayList<Punch> punchlist = new ArrayList();
         

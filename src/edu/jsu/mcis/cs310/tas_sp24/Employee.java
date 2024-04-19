@@ -2,12 +2,20 @@ package edu.jsu.mcis.cs310.tas_sp24;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Map;
 
 /**
- *
+ * An employee has various attributes such as ID, name, badge, department, shift, and type.
+ * This class provides methods to access and manipulate employee information.
+ * 
+ * <p>
+ * This class overrides the {@code toString()} method to provide a formatted string
+ * representation of the employee, including their ID, name, badge ID, type, department,
+ * and active date.
+ * </p>
+ * 
  * @author aseel
  */
-
 public class Employee {
 
     private int id;
@@ -20,10 +28,22 @@ public class Employee {
     private Shift shift;
     private EmployeeType employeetype;
 
-    //Constructors
+     /**
+     * Constructs a new Employee with the specified details.
+     * 
+     * @param id the employee's ID
+     * @param firstname the employee's first name
+     * @param middlename the employee's middle name
+     * @param lastname the employee's last name
+     * @param active the date and time when the employee became active
+     * @param badge the badge associated with the employee
+     * @param department the department in which the employee belongs
+     * @param shift the shift assigned to the employee
+     * @param employeetype the type of employee
+     */
     public Employee(int id, String firstname, String middlename, String lastname, LocalDateTime active, Badge badge,
             Department department, Shift shift, EmployeeType employeetype) {
-//replace argument with parameter map
+    //replace argument with parameter map
         this.id = id;
         this.firstname = firstname;
         this.middlename = middlename;
@@ -35,8 +55,14 @@ public class Employee {
         this.employeetype = employeetype;
 
     }
-
-    //getters methods
+    
+    // Getter methods...
+    /**
+     * Returns a string representation of this employee.
+     * contains the employee's ID, name, badgeID, type, department, and active date.
+     * 
+     * @return a string 
+     */
     public int getId() {
         return id;
     }

@@ -10,7 +10,24 @@ import java.time.LocalDateTime;
 
 /**
  *
+ * 
+ * 
+ * Data Access Object for retrieving Employee information from a database.
+ * This class provides methods to find an employee by their ID or badge ID.
+ * 
+ * <p>
+ * This class interacts with the database using a DAOFactory to obtain connections
+ * and execute SQL queries. It provides methods to find an employee by their ID or
+ * their associated badge ID. Each method returns an Employee object if the employee
+ * is found, or null if no matching record is found in the database.
+ * </p>
+ * 
+ * <p>
+ * Instances of this class should be created using a DAOFactory, which ensures proper
+ * management of database connections and resources.
+ * </p>
  * @author Raelee Shuler
+ * 
  */
 public class EmployeeDAO {
 
@@ -23,7 +40,15 @@ public class EmployeeDAO {
 
         this.daoFactory = daoFactory;
     }
-
+    
+    /**
+     * Finds and returns an employee with the specified ID from the database.
+     * 
+     * @param id the ID of the employee to find
+     * @return the Employee object representing the employee, or null if not found
+     * @throws DAOException if an SQL error occurs during the operation
+     */
+    
     public Employee find(int id) {
 
         Employee employee = null;
@@ -94,7 +119,16 @@ public class EmployeeDAO {
 
         return employee;
     }
-
+    
+    
+     /**
+     * Finds and returns an employee associated with the specified badge from the database.
+     * 
+     * @param badge the Badge object associated with the employee
+     * @return the Employee object representing the employee, or null if not found
+     * @throws DAOException if an SQL error occurs during the operation
+     */
+    
     public Employee find(Badge badge) {
 
         Employee employee = null;
@@ -116,6 +150,8 @@ public class EmployeeDAO {
                     rs = ps.getResultSet();
 
                     while (rs.next()) {
+                      // Extract employee data from the result set and call find() to get the Employee object
+                       
                         int employeeid = rs.getInt("id");                   
                         employee = find(employeeid);
 
