@@ -18,13 +18,26 @@ public class ShiftDAO {
     private static final String QUERY_FIND3 = "SELECT shiftid FROM employee WHERE badgeid = ?";
 
     private final DAOFactory daoFactory;
-
+    
+    
+    /**
+     * Constructs a ShiftDAO object with the specified DAOFactory.
+     *
+     * @param daoFactory the DAOFactory used to obtain connections to the database
+     */
     ShiftDAO(DAOFactory daoFactory) {
 
         this.daoFactory = daoFactory;
 
     }
-
+    
+    /**
+     * Finds and returns a Shift object with the specified ID from the database.
+     *
+     * @param id the ID of the shift to find
+     * @return the Shift object with the specified ID, or null if not found
+     * @throws DAOException if an SQL exception occurs
+     */
     public Shift find(int id) {
 
         Shift shift = null;
@@ -105,7 +118,14 @@ public class ShiftDAO {
         return shift;
 
     }
-
+    
+    /**
+     * Finds and returns the Shift object associated with the specified badge from the database.
+     *
+     * @param badge the Badge object to find the associated Shift for
+     * @return the Shift object associated with the specified badge, or null if not found
+     * @throws DAOException if an SQL exception occurs
+     */
     public Shift find(Badge badge) {
 
         Shift shift = null;

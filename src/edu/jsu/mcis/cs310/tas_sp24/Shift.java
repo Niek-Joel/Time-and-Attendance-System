@@ -5,7 +5,14 @@ import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 
 /**
+ * 
  *
+ * The Shift class represents a work shift with various properties such as start time, stop time, lunch duration, etc.
+ * Instances of this class are used to store and manage shift information.
+ * <p>
+ * A Shift object is constructed using a map containing shift details, and provides methods to access and manipulate
+ * these details.
+ * </p>
  * @author aseel
  */
 public class Shift {
@@ -23,9 +30,10 @@ public class Shift {
     private final long lunchduration;
     private final long shiftduration;
 
-    /*constructor 
-    * parameter values can be stored in the map as strings and passed as a single argument to the Shift constructor;
-    * the constructor can then retrieve these values from the map and convert them to their native types.
+     /**
+     * Constructs a Shift object using the provided map of shift details.
+     *
+     * @param shiftmap a map containing shift details (key-value pairs)
      */
     public Shift(HashMap<String, String> shiftmap) {
         description = (String) shiftmap.get("Description");
@@ -45,58 +53,125 @@ public class Shift {
         shiftduration = ChronoUnit.MINUTES.between(shiftstart, shiftstop);
 
     }
+    
 
-    //get() methods
+    // Getter methods for accessing shift details
+    /**
+     * Returns the description of the shift.
+     *
+     * @return the description of the shift
+     */
     public String getDescription() {
         return description;
     }
-
+    
+     /**
+     * Returns the ID of the shift.
+     *
+     * @return the ID of the shift
+     */
     public int getID() {
         return id;
     }
-
+    
+     /**
+     * Returns the start time of the shift.
+     *
+     * @return the start time of the shift
+     */
     public LocalTime getShiftstart() {
         return shiftstart;
     }
-
+    
+    /**
+     * Returns the stop time of the shift.
+     *
+     * @return the stop time of the shift
+     */
     public LocalTime getShiftstop() {
         return shiftstop;
     }
-
+    
+    /**
+     * Returns the round interval for the shift.
+     *
+     * @return the round interval for the shift
+     */
     public int getRoundinterval() {
         return roundinterval;
     }
-
+    
+     /**
+     * Returns the grace period for the shift.
+     *
+     * @return the grace period for the shift
+     */
     public int getGraceperiod() {
         return graceperiod;
     }
-
+    
+    /**
+     * Returns the dock penalty for the shift.
+     *
+     * @return the dock penalty for the shift
+     */
     public int getDockpenalty() {
         return dockpenalty;
     }
-
+    
+    /**
+     * Returns the start time of the lunch break.
+     *
+     * @return the start time of the lunch break
+     */
     public LocalTime getLunchstart() {
         return lunchstart;
     }
-
+    
+     /**
+     * Returns the stop time of the lunch break.
+     *
+     * @return the stop time of the lunch break
+     */
     public LocalTime getLunchstop() {
         return lunchstop;
     }
-
+    
+     /**
+     * Returns the threshold for the lunch break.
+     *
+     * @return the threshold for the lunch break
+     */
     public int getLunchthreshold() {
         return lunchthreshold;
     }
-
+    
+     /**
+     * Returns the duration of the lunch break in minutes.
+     *
+     * @return the duration of the lunch break in minutes
+     */
     public long getLunchduration() {
 
         return lunchduration;
 
     }
-
+    
+    /**
+     * Returns the duration of the shift in minutes.
+     *
+     * @return the duration of the shift in minutes
+     */
     public long getShiftduration() {
         return shiftduration;
     }
-
+    
+    
+    /**
+     * Returns a string representation of the shift.
+     *
+     * @return a string representation of the shift
+     */
     @Override
     public String toString() {
 

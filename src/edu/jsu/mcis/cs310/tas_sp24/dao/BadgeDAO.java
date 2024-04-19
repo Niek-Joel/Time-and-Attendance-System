@@ -3,6 +3,14 @@ package edu.jsu.mcis.cs310.tas_sp24.dao;
 import edu.jsu.mcis.cs310.tas_sp24.Badge;
 import java.sql.*;
 
+
+/**
+ * DAO for retrieving badge information from the database.
+ * 
+ * <p>The `BadgeDAO` class provides methods to interact with the database to retrieve
+ * information about badges. It allows for finding a badge by its ID.</p>
+ * 
+ */
 public class BadgeDAO {
 
     private static final String QUERY_FIND = "SELECT * FROM badge WHERE id = ?";
