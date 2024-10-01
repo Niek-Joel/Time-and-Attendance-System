@@ -1,0 +1,2 @@
+This is a time and attendance system developed to be used in a real working environment. The system involves using a set of punch in machines connected to a MySQL database. The written code mainly handles adjusting the punch ins to the correct 
+time stamp and then calculating when they were clocked in and out. But there are many secondary functions like calcuating total accrued hours. The project also includes a series of unit tests to catch any obvious design flaws. 
